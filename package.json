@@ -4,11 +4,7 @@
   "description": "@rope/home: rope homepage",
   "license": "MIT",
   "private": true,
-  "keywords": [
-    "rope-home",
-    "kd",
-    "kd.js"
-  ],
+  "keywords": ["rope-home", "kd", "kd.js"],
   "author": "Gokmen Goksel <gokmen@goksel.me>",
   "maintainers": [
     {
@@ -22,6 +18,11 @@
       "url": "https://github.com/usirin"
     }
   ],
+  "scripts": {
+    "start": "gulp",
+    "prebuild": "npm install",
+    "build": "gulp build"
+  },
   "devDependencies": {
     "browserify": "^14.4.0",
     "coffeeify": "^2.1.0",
