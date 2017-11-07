@@ -6,7 +6,7 @@ services:
 
   server:
     extends: base
-    command: gulp
+    command: npm start
     environment:
       - "MONGO_ADDR=mongodb://mongo:27017/rope"
     ports:
