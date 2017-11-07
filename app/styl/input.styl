@@ -1,0 +1,25 @@
+$inputPadding = 5px
+
+.input
+  font-size 13px
+  padding $inputPadding
+  border 1px solid $borderColor
+  background $borderColor
+
+  &:focus
+    outline none
+
+.inline-input
+  background transparent
+  border none
+  border-bottom 1px solid $borderColor
+  color #fff
+  padding 0
+  line-height 2.5
+  margin-right 10px
+
+  &:focus
+    border-bottom 1px solid lighten($borderColor, 20%)
+
+.fluid-input
+  width 100%

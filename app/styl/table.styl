@@ -1,0 +1,30 @@
+.table
+  display                   table
+  width                     100%
+
+.table a
+  text-decoration           none
+
+  &:hover
+    text-decoration         underline
+
+.table-header
+  text-align                left
+  color                     rgb(176, 176, 176)
+  line-height               2
+
+.table-column-header
+  display                   table-cell
+  padding-bottom            4px
+
+.table-row
+  display                   table-row
+  line-height               2.5
+  border-bottom             1px solid $borderColor
+
+  &:hover
+    background              rgba(255, 255, 255, 0.05)
+
+.table-cell
+  display                   table-cell
+  padding                   4px 0

@@ -1,0 +1,493 @@
+// @import url('https://fonts.googleapis.com/css?family=PT+Mono');
+
+$mainFont = "-apple-system", "BlinkMacSystemFont", "Segoe UI",
+            'Helvetica Neue', Helvetica, sans-serif
+
+$monoFont = "SF Mono", "Andale Mono", "Monaco", "Courier New", monospace
+
+$borderColor = #3c4f63
+
+@require 'table'
+@require 'container'
+@require 'input'
+@require 'button'
+
+// generic page styles
+@require 'page'
+
+// page specific styles
+@require 'page-home'
+@require 'page-profile'
+
+body
+  font-family               $mainFont
+  margin                    0
+  padding                   0
+  background                #2a3643
+  color                     #eee
+
+h1
+  font-size                 20px
+  line-height               30px
+  font-weight               bold
+
+header.main-header
+  position                  absolute
+  top                       0
+  left                      0
+  right                     0
+  z-index                   2
+  display                   flex
+  padding                   20px
+  border-bottom             2px solid $borderColor
+
+.main-header--left
+  flex                      .55 auto
+
+.main-header--right
+  flex                      .45 auto
+  display                   flex
+  align-items               right
+  justify-content           flex-end
+
+pre
+  font-family               $monoFont
+  font-size                 13px
+  line-height               15px
+  overflow-x                auto
+
+.main-view
+.root
+  width                     100%
+  height                    100vh
+  overflow                  hidden
+
+.rope-scene-view
+
+  z-index                   1
+  height                    96vh
+
+  background                none !important
+  border-radius             0 !important
+
+  .rope-scene
+    cursor                  -webkit-grab !important
+    cursor                  grab !important
+
+  .counter
+    top                     10px
+    left                    0
+    position                absolute
+    z-index                 5
+    text-align              right
+
+  .zoom-controls
+    visibility              hidden
+    width                   230px
+    height                  13px
+
+    right                   30px
+    bottom                  30px
+    position                absolute
+
+    .kdbutton.reset-button
+      top                   -4px
+      float                 right
+      background            none
+      color                 #eee
+      border                none
+      padding               0
+
+    .zoom-slider
+      float                 left
+      height                2px
+      top                   4px
+      margin-left           10px
+
+      .handle
+        height              10px
+        top                 -4px
+
+      .bar
+        border              none !important
+        background          none !important
+        box-shadow          none !important
+
+    a.zoom-control
+      display               block
+      float                 left
+
+      width                 15px
+      height                15px
+
+      color                 #5b7189
+      font-size             20px
+      text-align            center
+      font-weight           bold
+      line-height           12px
+      text-decoration       none
+
+      box-sizing            border-box
+
+      &.zoomin
+        margin-left         16px
+
+      &:hover
+        border-color        #bbb
+        color               #bbb
+
+.kddia-scene
+  background                radial-gradient(circle, $borderColor 10%, transparent 10%),
+                            radial-gradient(circle, $borderColor 10%, #2a3643 10%) 5px 5px !important
+
+  background-size           10px 10px !important
+  background-color          #11161c   !important
+  border-radius             0         !important
+
+.kddia-container
+  width                     100%    !important
+
+.rope-container
+  height                    48px    !important
+  top                       unset   !important
+  bottom                    calc(16vh \- 40px)
+
+.kite-container
+  width                     100%    !important
+  height                    100%    !important
+
+  overflow                  visible
+  border-radius             0       !important
+
+  &.onreset
+    -webkit-transition      all .2s ease !important
+    transition              all .2s ease !important
+
+    .kite-dia
+      -webkit-transition    all .2s ease !important
+      transition            all .2s ease !important
+
+
+.kddia-object
+  cursor                    default !important
+
+.kddia-joint
+  visibility                hidden
+
+  &.top
+    margin-left             -3px    !important
+    top                      4px    !important
+
+  &.bottom
+    bottom                  -3px    !important
+
+.rope-dia
+  border                    none    !important
+  background                url('/images/rope-string.png')
+  background-size           60px
+
+  width                     60px    !important
+  height                    42px    !important
+
+  left                      50%     !important
+  margin-left               -30px   !important
+
+.kite-dia
+  border                    none    !important
+  background                url('/images/kite.png') no-repeat
+  background-size           90px
+
+  width                     90px    !important
+  height                    114px   !important
+  opacity                   .5
+
+  -webkit-transform         rotate(0deg)
+  transform                 rotate(0deg)
+  filter                    grayscale(80%)
+
+  -webkit-transition        transform .2s ease-in
+  transition                transform .2s ease-in
+
+  .kddia-joint
+    -webkit-transition      all .2s ease-in
+    transition              all .2s ease-in
+
+  cite
+    width                   48px
+    height                  62px
+    margin-left             25px
+    margin-top              26px
+    display                 block
+    background-size         38px      !important
+    background-repeat       no-repeat !important
+    opacity                 .8
+
+
+  &:hover, &.dragInAction, &.selected, &.hover
+    background              url('/images/kite-dark.png') no-repeat
+    background-size         90px
+    filter                  grayscale(0%)
+    z-index                 10000 !important
+    opacity                 1
+    cite
+      opacity               1
+
+  &.current
+    z-index                 10000 !important
+    filter                  grayscale(0%)
+    margin-top              -20px
+    opacity                 1
+    cite
+      opacity               1
+
+  &.selected
+    opacity                 1
+
+  &.animate
+    -webkit-transition      top 1s cubic-bezier(0.6,-0.4, 0.46, 1.47)
+    transition              top 1s cubic-bezier(0.6,-0.4, 0.46, 1.47)
+
+  &.left
+    -webkit-transform       rotate(-10deg)
+    transform               rotate(-10deg)
+
+    .kddia-joint
+      bottom                10px !important
+      margin-left           5px  !important
+
+  &.right
+    -webkit-transform       rotate(10deg)
+    transform               rotate(10deg)
+
+    .kddia-joint
+      bottom                20px  !important
+      margin-left           -21px !important
+
+.js
+  cite
+    background              url('/images/js-node.png')
+.go
+  cite
+    background              url('/images/go-node.png')
+.safari
+  cite
+    background              url('/images/safari-node.png')
+.chrome
+  cite
+    background              url('/images/chrome-node.png')
+.firefox
+  cite
+    background              url('/images/firefox-node.png')
+.edge
+  cite
+    background              url('/images/edge-node.png')
+.opera
+  cite
+    background              url('/images/opera-node.png')
+
+
+.kite-list
+  width                     100vw
+  margin                    0 auto
+  box-sizing                border-box
+
+  .counter
+    top                     60px
+
+  .kdscrollview
+    // background              rgb(245, 245, 245)
+
+.kite-item
+
+  font-family               $monoFont
+  font-size                 13px
+  padding                   10px
+  box-sizing                border-box
+  border-bottom             1px solid $borderColor
+  cursor                    default
+  max-height                32px
+
+  &:hover, &.hover
+    background              $borderColor
+
+  &.header
+    height                  auto
+    font-weight             bold
+    font-family             inherit
+
+    &:hover
+      background            none
+
+  &.selected
+    background              $borderColor
+    color                   #eee
+    max-height              640px
+
+  div.item
+    display                 flex
+
+    > div
+      flex                  auto
+      width                 25%
+      text-overflow         ellipsis
+      overflow              hidden
+      white-space           nowrap
+
+  div.details
+
+    background              #2a3643
+    color                   #eee
+    margin                  10px 10px 0 0
+    box-sizing              border-box
+    border-radius           4px
+    padding                 10px
+
+    h3
+      display               block
+      line-height           22px
+      font-size             22px
+      overflow              hidden
+      text-overflow         ellipsis
+      white-space           nowrap
+      font-family           $mainFont
+      margin-bottom         10px
+
+    cite
+      background-size       22px
+      width                 22px
+      height                22px
+      display               block
+      position              absolute
+      right                 12px
+
+    .kite-id
+      font-size             16px
+      font-family           $monoFont
+      color                 #777
+      -webkit-user-select   all
+      -moz-user-select      all
+      -ms-user-select       all
+      &::selection
+        color               #fff
+        background          #3d945e
+
+    .buttons
+      float                 right
+      .cancel
+        background          none
+        border              none
+        line-height         20px
+        color               #666
+
+.kdnotification.tray
+  background                none
+
+  .kdnotification-title
+    color                   #eee
+
+  .kdnotification-content
+    padding                 2px !important
+
+.kdtooltip.placement-left
+  .wrapper
+    background-color        #000  !important
+  &:after
+    top                     20%   !important
+    margin-top              -20px !important
+    border-left-color       #000  !important
+
+.kdmodal
+  border                    1px solid #AAA
+  box-shadow                0 0 10px #AAA
+
+  .kdmodal-title, .kdmodal-content
+    padding                 10px !important
+    font-family             $mainFont
+    .title
+      font-weight           bold
+
+.auth-area
+.user-info
+.navbar-account
+  display                   flex
+  align-items               center
+  align-self                flex-start
+
+.navbar-account
+  justify-content           space-between
+
+.navbar-account .logout-link
+  margin-left               10px
+  margin-top                -1px
+
+.user-info
+  justify-content           space-around
+  font-size                 13px
+  border-right              1px solid #eee
+  padding-right             20px
+  pointer                   cursor
+
+.user-info .photo img
+  border-radius             50%
+  margin-right              15px
+
+// -------
+
+
+.CodeMirror
+  font-size                 14px
+  font-family               $monoFont
+  line-height               18px
+
+
+.red
+  color                     #ff4136
+
+.text-right
+  text-align                right
+
+// loading
+.message
+  width                     100%
+  min-height                200px
+  display                   flex
+  align-items               center
+  justify-content           center
+
+// kd.js overrides
+.kdmodal .kdmodal-inner .kdmodal-title
+  line-height               normal
+
+  span.title
+    font-size               14px
+
+a.page-title
+  text-decoration none
+  color white
+
+
+@media screen and (min-width: 800px)
+
+  .rope-scene-view
+    height                  100vh
+    .zoom-controls
+      visibility            visible
+      position              fixed
+      right                 440px
+
+  .kite-list
+    display                 flex
+
+    .kdscrollview
+      height                calc(100vh \- 32px)
+      border-left           2px solid $borderColor
+      margin-top            32px
+      max-width             400px
+
+  .kite-item
+    max-width               400px
+    &.header
+      z-index               10001
+      position              fixed
+      right                 2px
+      border-left           2px solid $borderColor

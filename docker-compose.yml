@@ -1,0 +1,25 @@
+version: '2'
+services:
+  base:
+    build: .
+    image: ropelive/home
+
+  server:
+    extends: base
+    command: gulp
+    environment:
+      - "MONGO_ADDR=mongodb://mongo:27017/rope"
+    ports:
+      - "9000:9000"
+    links:
+      - mongo
+    volumes:
+      - ./app:/src/app
+      - ./server:/src/server
+
+  mongo:
+    image: mongo:3.0.15
+    ports:
+      - "27017:27017"
+    volumes:
+      - /data/db
