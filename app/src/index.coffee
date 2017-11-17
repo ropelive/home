@@ -9,9 +9,9 @@ RopeController = require './ropecontroller'
 HomePage = require './pages/home'
 TokensPage = require './pages/tokens'
 
-{ user } = _globals
+apiClient = require './apiclient'
 
-start = ->
+start = (user) ->
   router = new Router
   ropeCounter = new kd.Data {
     nodes: 0
@@ -32,4 +32,8 @@ start = ->
 
   app.run().then -> console.log 'app is running'
 
-start()
+apiClient
+  .get '/whoami'
+  .then (response) -> response.data
+  .then (user) -> start user
+  .catch -> start()
