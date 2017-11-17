@@ -6,16 +6,19 @@ services:
 
   server:
     extends: base
-    command: npm start
+    command: gulp watch-server
     environment:
       - "MONGO_ADDR=mongodb://mongo:27017/rope"
+      - "WEB_URL=http://localhost:9001"
     ports:
       - "9000:9000"
     links:
       - mongo
     volumes:
-      - ./app:/src/app
-      - ./server:/src/server
+      - ./app:/opt/rope/app
+      - ./server:/opt/rope/server
+    depends_on:
+      - mongo
 
   mongo:
     image: mongo:3.0.15

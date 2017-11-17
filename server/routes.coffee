@@ -5,6 +5,8 @@ passport = require 'passport'
 User = require './models/user'
 Token = require './models/token'
 
+{ WEB_URL } = process.env
+
 router = Router()
 
 # TODO: add tests
@@ -22,7 +24,7 @@ router.get(
 router.get(
   '/auth/github/callback'
   passport.authenticate('github', { failureRedirect: '/auth/github/callback/error' })
-  (req, res) -> res.redirect '/'
+  (req, res) -> res.redirect WEB_URL
 )
 
 # TODO: add tests
