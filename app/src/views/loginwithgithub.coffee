@@ -1,5 +1,7 @@
 kd = require 'kd.js'
 
+{ API_URL } = process.env
+
 module.exports = class LoginWithGithub extends kd.CustomHTMLView
 
   constructor: (options = {}, data) ->
@@ -12,4 +14,4 @@ module.exports = class LoginWithGithub extends kd.CustomHTMLView
 
   click: (event) ->
     kd.utils.stopDOMEvent event
-    location.href = '/auth/github'
+    location.href = "#{API_URL}/auth/github"
