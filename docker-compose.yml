@@ -6,7 +6,7 @@ services:
 
   server:
     extends: base
-    command: gulp watch-server
+    command: npm run watch:server
     environment:
       - "MONGO_ADDR=mongodb://mongo:27017/rope"
       - "WEB_URL=http://localhost:9001"

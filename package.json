@@ -4,11 +4,7 @@
   "description": "@rope/home: rope homepage",
   "license": "MIT",
   "private": true,
-  "keywords": [
-    "rope-home",
-    "kd",
-    "kd.js"
-  ],
+  "keywords": ["rope-home", "kd", "kd.js"],
   "author": "Gokmen Goksel <gokmen@goksel.me>",
   "maintainers": [
     {
@@ -23,7 +19,8 @@
     }
   ],
   "scripts": {
-    "start": "gulp",
+    "watch:server": "gulp watch-server",
+    "watch:client": "API_URL=http://localhost:9000 gulp",
     "prebuild": "npm install",
     "build": "gulp build"
   },
