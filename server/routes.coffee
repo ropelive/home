@@ -30,7 +30,7 @@ router.get(
 # TODO: add tests
 router.get '/logout', (req, res) ->
   req.logout()
-  res.redirect '/'
+  res.redirect WEB_URL
 
 # TODO: add tests
 router.get '/whoami', (req, res) ->

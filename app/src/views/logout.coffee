@@ -1,5 +1,7 @@
 kd = require 'kd.js'
 
+{ API_URL } = process.env
+
 module.exports = class Logout extends kd.CustomHTMLView
 
   constructor: (options = {}, data) ->
@@ -14,5 +16,5 @@ module.exports = class Logout extends kd.CustomHTMLView
   click: (event) ->
     kd.utils.stopDOMEvent event
 
-    location.href = '/logout'
+    location.href = "#{API_URL}/logout"
 
