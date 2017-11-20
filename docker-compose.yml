@@ -6,7 +6,7 @@ services:
 
   server:
     extends: base
-    command: npm run watch:server
+    command: sh -c './scripts/wait-for -t 15 mongo:27017 -- npm start'
     environment:
       - "MONGO_ADDR=mongodb://mongo:27017/rope"
       - "WEB_URL=http://localhost:9001"
