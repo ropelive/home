@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "start": "gulp watch-server",
-    "watch:client": "API_URL=http://localhost:9000 gulp",
+    "watch:client": "gulp",
     "prebuild": "npm install",
     "build": "gulp build"
   },
