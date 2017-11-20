@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 gulp            = require 'gulp'
 gutil           = require 'gulp-util'
 stylus          = require 'gulp-stylus'
@@ -11,8 +13,13 @@ nodemon         = require 'nodemon'
 watchify        = require 'watchify'
 coffeeify       = require 'coffeeify'
 browserify      = require 'browserify'
+envify          = require 'envify/custom'
 
 production      = process.env.NODE_ENV is 'production'
+
+browserSync = require('browser-sync').create()
+historyFallback = require('connect-history-api-fallback')
+
 globalBundler   = null
 
 paths = require './paths'
@@ -34,8 +41,9 @@ getBrowserifiedBundler = ->
     fullPaths    : {}
     entries      : [ paths.scripts.source ]
     extensions   : [ '.coffee' ]
-    transform    : [ 'coffeeify' ]
+    transform    : [ 'coffeeify', envify { API_URL: process.env.API_URL } ]
     debug        : !production
+
 
 
 gulp.task 'compile-scripts', ->
@@ -47,6 +55,7 @@ gulp.task 'compile-scripts', ->
   bundle.pipe streamify uglify()  if production
   bundle
     .pipe gulp.dest paths.scripts.destination
+    .pipe browserSync.reload { stream: yes }
 
 
 gulp.task 'watch-server', (done) ->
@@ -59,8 +68,16 @@ gulp.task 'watch-server', (done) ->
       done()
 
 
+gulp.task 'client-server', ['compile-scripts'], ->
+  browserSync.init
+    notify: no
+    port: 9001
+    server:
+      baseDir: './dist'
+      middleware: [historyFallback()]
 
-gulp.task 'watch', ['watch-server'], ->
+
+gulp.task 'watch', ->
 
   gulp.watch paths.styles.watch, [ 'styles' ]
 
@@ -121,10 +138,20 @@ gulp.task 'export-cm', ->
     ]
     .pipe gulp.dest './dist/cm/'
 
+
+gulp.task 'entry-point', ->
+
+  gulp
+    .src  paths.entryPoint.source
+    .pipe gulp.dest paths.entryPoint.destination
+
+
+
 gulp.task 'build',   [
-  'compile-scripts', 'styles', 'export-kd', 'export-cm', 'images'
+  'compile-scripts', 'styles', 'entry-point', 'export-kd', 'export-cm', 'images'
 ]
 
 gulp.task 'default', [
-  'build', 'watch'
-]
+  'build', 'watch', 'client-server'
+ ]
+

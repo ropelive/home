@@ -9,6 +9,10 @@ module.exports = paths =
     source      : './app/styl/app.styl'
     watch       : './app/styl/*.styl'
     destination : './dist/css/'
+  entryPoint    :
+    source      : './app/index.html'
+    watch       : './app/index.html'
+    destination : './dist/'
   images        :
     source      : './app/images/*'
     destination : './dist/images/'

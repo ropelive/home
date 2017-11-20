@@ -1,5 +1,6 @@
 kd = require 'kd.js'
-axios = require 'axios'
+
+apiClient = require '../apiclient'
 
 TokenTable = require '../views/tokentable'
 Message = require '../views/message'
@@ -27,7 +28,7 @@ module.exports = class TokensPage extends kd.CustomHTMLView
 
     @tokenTable?.destroy()
 
-    axios
+    apiClient
       .get '/tokens'
       .then (response) -> response.data
       .then (tokens) =>
@@ -44,7 +45,7 @@ module.exports = class TokensPage extends kd.CustomHTMLView
 
     switch actionType
       when 'revoke'
-        axios
+        apiClient
           .delete "/tokens/#{token.value}"
           .then @bound 'fetchTokens'
 
@@ -52,6 +53,6 @@ module.exports = class TokensPage extends kd.CustomHTMLView
   onNewToken: (label) ->
     options = {}
     options.label = label  if label
-    axios
+    apiClient
       .post '/tokens', options
       .then @bound 'fetchTokens'

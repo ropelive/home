@@ -11,12 +11,13 @@ bodyParser = require 'body-parser'
 cookieParser = require 'cookie-parser'
 passport = require 'passport'
 mongoose = require 'mongoose'
+cors = require 'cors'
 { Strategy: GithubStrategy } = require 'passport-github2'
 
 {
   PORT_SERVER, GITHUB_CLIENT_ID
   GITHUB_CLIENT_SECRET, MONGO_ADDR
-  SESSION_SECRET
+  SESSION_SECRET, WEB_URL
 } = process.env
 
 routes = require './routes'
@@ -32,7 +33,6 @@ mongoose.connect MONGO_ADDR, { useMongoClient: yes }
 
 # passport.js configuration
 
-# TODO: integrate this with a db.
 passport.serializeUser (user, done) -> done null, user.id
 passport.deserializeUser (id, done) -> User.findOne { _id: id }, done
 
@@ -60,11 +60,6 @@ app = express()
 
 app.set 'port', PORT_SERVER
 
-# setup views
-
-app.set 'views', path.resolve __dirname, './views'
-app.set 'view engine', 'ejs'
-
 # mongodb session configuration
 sessionStore = new MongoDBStore
   uri: MONGO_ADDR
@@ -73,6 +68,12 @@ sessionStore = new MongoDBStore
 sessionStore.on 'error', (error) ->
   console.log 'error on mongo session store', error
 
+
+app.use (req, res, next) ->
+  res.append 'Access-Control-Allow-Credentials', [true]
+  next()
+
+app.use cors { origin: WEB_URL }
 
 app.use logger 'dev'
 app.use bodyParser.json()
@@ -92,14 +93,6 @@ app.use(passport.session())
 
 # register routes
 app.use '/', routes
-
-app.use express.static path.resolve __dirname, '../dist'
-
-app.use (req, res) ->
-  res.render 'index',
-    user: req.user
-
-# error handling
 
 # handle not found and forward to error handler
 app.use (req, res, next) ->

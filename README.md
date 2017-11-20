@@ -10,7 +10,8 @@ After cloning the repo, cd into `home` directory and do;
 
 ```sh
 npm install
-gulp # if not installed before; npm install -g gulp
+docker-compose up
+npm run watch:client # if not installed before; npm install -g gulp
 ```
 
 This will open your browser with `localhost:9000` and you should see the
