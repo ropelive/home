@@ -1,12 +1,12 @@
 kd = require 'kd.js'
 { Kite } = require 'kite.js'
 
-{ HOST, NAME, AUTH, LOG_LEVEL
-  AUTO_CONNECT, AUTO_RECONNECT } = require './constants'
+{ ROPE_SERVER, ROPE_DEBUG, NODE_NAME
+  AUTO_CONNECT, AUTO_RECONNECT
+  BABEL_OPTIONS, BROWSERIFY_CDN } = do require './constants'
 
 uuid = require 'uuid'
 Babel = require 'babel-standalone'
-{ BABEL_OPTIONS, BROWSERIFY_CDN, HOST } = require './constants'
 BrowserSandbox = require 'browser-module-sandbox'
 
 module.exports = class Rope extends kd.Object
@@ -43,12 +43,12 @@ module.exports = class Rope extends kd.Object
     # Please make sure this one to use @rope/node in the future
     # or keep them in sync ~ GG
     @kite = new Kite
-      url           : HOST
+      url           : ROPE_SERVER
       api           : @getApi()
-      name          : NAME
-      logLevel      : LOG_LEVEL
+      name          : NODE_NAME
+      logLevel      : ROPE_DEBUG
       environment   : 'Browser'
-      autoConnect   : false
+      autoConnect   : AUTO_CONNECT
       autoReconnect : AUTO_RECONNECT
       transportClass: Kite.transport.SockJS
 
@@ -59,7 +59,7 @@ module.exports = class Rope extends kd.Object
 
   connect: ->
 
-    @emit 'message', "Connecting to rope over #{HOST}..."
+    @emit 'message', "Connecting to rope over #{ROPE_SERVER}..."
     @kite.connect()
 
 
