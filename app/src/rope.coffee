@@ -53,6 +53,7 @@ module.exports = class Rope extends kd.Object
       transportClass: Kite.transport.SockJS
 
     @kite.id = id  if id or id = @getOption 'kiteId'
+    @kite.auth = { authenticated: false }
 
     @forwardEvents @kite, ['open', 'close']
 
@@ -71,6 +72,9 @@ module.exports = class Rope extends kd.Object
 
     @handleFunc 'rope.identified', (data, callback) ->
 
+      @kite.logger.info('Identified with:', data)
+
+      @kite.auth = data.auth
       @kite.environment = data.environment  if data.environment
 
       @kite.tell('count').then (totalNodes) =>
@@ -84,6 +88,7 @@ module.exports = class Rope extends kd.Object
             break
         @emit 'queryResult', kites
 
+      @kite.tell 'subscribe', 'node.exec'
       @kite.tell 'subscribe', 'node.added'
       @kite.tell 'subscribe', 'node.removed'
 
@@ -91,7 +96,7 @@ module.exports = class Rope extends kd.Object
 
     @handleFunc 'rope.identify', (id, callback) ->
 
-      @kite.emit('info', 'identify requested, doing now...', id)
+      @kite.logger.info('Identify requested, doing now...', id)
       @emit 'message', 'Connected! Identify requested, doing now...'
 
       info =
@@ -104,6 +109,9 @@ module.exports = class Rope extends kd.Object
         useragent: navigator.userAgent
 
       callback null, info
+
+    @handleFunc 'rope.error', (args) ->
+      @kite.disconnect()  if args.disconnect
 
     @handleFunc 'rope.notify', (args) ->
       @emit 'notification', args
