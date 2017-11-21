@@ -11,17 +11,8 @@ module.exports = class NavbarAccount extends kd.CustomHTMLView
 
     super options, data
 
-    @userInfo = new UserInfo {
-      click: @bound 'onUserInfoClick'
-    }, data
-
+    @userInfo = new UserInfo {}, data
     @logout = new Logout
-
-
-  onUserInfoClick: ->
-
-    # FIXME: can't find a quicker solution yet, this is so bad. ~Umut
-    global.app.router.handleRoute '/profile'
 
 
   pistachio: ->

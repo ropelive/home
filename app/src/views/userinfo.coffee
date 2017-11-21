@@ -4,7 +4,9 @@ module.exports = class UserInfo extends kd.CustomHTMLView
 
   constructor: (options = {}, data) ->
 
-    options.tagName = 'span'
+    options.tagName = 'a'
+    options.attributes =
+      href: '/profile'
     options.cssClass = 'user-info'
     options.size ?= 30
 

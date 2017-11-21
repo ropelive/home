@@ -12,7 +12,9 @@ TokensPage = require './pages/tokens'
 { user } = _globals
 
 start = ->
-  router = new Router
+
+  kd.registerSingleton 'router', router = new Router
+
   ropeCounter = new kd.Data {
     nodes: 0
     totalNodes: 0

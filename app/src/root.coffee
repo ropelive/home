@@ -15,7 +15,6 @@ module.exports = class Root extends kd.View
     @pageContainer = new kd.CustomHTMLView { cssClass: 'page-container' }
 
 
-
   makePage: (name, context) ->
     { View, options, data } = @options.pages[name]
     options = Object.assign { context }, options
@@ -29,7 +28,9 @@ module.exports = class Root extends kd.View
 
     { pages } = @getOptions()
 
-    page = if @pages[name] then @pages[name] else @makePage name, context
+    page = @pages[name] ? @makePage name, context
+
+    return if @visiblePage is page
 
     @visiblePage?.detach()
     @pageContainer.addSubView page

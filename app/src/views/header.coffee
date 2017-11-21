@@ -18,7 +18,9 @@ module.exports = class Header extends kd.CustomHTMLView
   pistachio: ->
     """
     <div class='main-header--left'>
-      <a class='page-title' href='/'><h1>Rope Universe</h1></a>
+      <a class='page-title' href='/'>
+        <h1>Rope Universe</h1>
+      </a>
     </div>
     <div class='main-header--right'>
       {{> @authArea}}

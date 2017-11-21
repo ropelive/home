@@ -1,12 +1,12 @@
 kd = require 'kd.js'
 { Kite } = require 'kite.js'
 
-{ HOST, NAME, AUTH, LOG_LEVEL
-  AUTO_CONNECT, AUTO_RECONNECT } = require './constants'
+{ ROPE_SERVER, ROPE_DEBUG, NODE_NAME
+  AUTO_CONNECT, AUTO_RECONNECT
+  BABEL_OPTIONS, BROWSERIFY_CDN } = do require './constants'
 
 uuid = require 'uuid'
 Babel = require 'babel-standalone'
-{ BABEL_OPTIONS, BROWSERIFY_CDN, HOST } = require './constants'
 BrowserSandbox = require 'browser-module-sandbox'
 
 module.exports = class Rope extends kd.Object
@@ -43,23 +43,24 @@ module.exports = class Rope extends kd.Object
     # Please make sure this one to use @rope/node in the future
     # or keep them in sync ~ GG
     @kite = new Kite
-      url           : HOST
+      url           : ROPE_SERVER
       api           : @getApi()
-      name          : NAME
-      logLevel      : LOG_LEVEL
+      name          : NODE_NAME
+      logLevel      : ROPE_DEBUG
       environment   : 'Browser'
-      autoConnect   : false
+      autoConnect   : AUTO_CONNECT
       autoReconnect : AUTO_RECONNECT
       transportClass: Kite.transport.SockJS
 
     @kite.id = id  if id or id = @getOption 'kiteId'
+    @kite.auth = { authenticated: false }
 
     @forwardEvents @kite, ['open', 'close']
 
 
   connect: ->
 
-    @emit 'message', "Connecting to rope over #{HOST}..."
+    @emit 'message', "Connecting to rope over #{ROPE_SERVER}..."
     @kite.connect()
 
 
@@ -71,6 +72,9 @@ module.exports = class Rope extends kd.Object
 
     @handleFunc 'rope.identified', (data, callback) ->
 
+      @kite.logger.info('Identified with:', data)
+
+      @kite.auth = data.auth
       @kite.environment = data.environment  if data.environment
 
       @kite.tell('count').then (totalNodes) =>
@@ -84,6 +88,7 @@ module.exports = class Rope extends kd.Object
             break
         @emit 'queryResult', kites
 
+      @kite.tell 'subscribe', 'node.exec'
       @kite.tell 'subscribe', 'node.added'
       @kite.tell 'subscribe', 'node.removed'
 
@@ -91,7 +96,7 @@ module.exports = class Rope extends kd.Object
 
     @handleFunc 'rope.identify', (id, callback) ->
 
-      @kite.emit('info', 'identify requested, doing now...', id)
+      @kite.logger.info('Identify requested, doing now...', id)
       @emit 'message', 'Connected! Identify requested, doing now...'
 
       info =
@@ -104,6 +109,9 @@ module.exports = class Rope extends kd.Object
         useragent: navigator.userAgent
 
       callback null, info
+
+    @handleFunc 'rope.error', (args) ->
+      @kite.disconnect()  if args.disconnect
 
     @handleFunc 'rope.notify', (args) ->
       @emit 'notification', args

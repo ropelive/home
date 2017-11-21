@@ -25,7 +25,7 @@ module.exports = class RopeController extends kd.ListViewController
       @rope.on 'notification', @bound 'handleChanges'
       @rope.on 'queryResult', @bound 'replaceAllItems'
       @rope.on 'totalNodes', (totalNodes) =>
-        @counter.totalNodes = totalNodes
+        @counter.totalNodes = totalNodes.total
       @rope.on 'method.call', (name) =>
         @scene.addTransfer @connection, {
           color: 'white', size: 6, duration: 600
@@ -116,6 +116,21 @@ module.exports = class RopeController extends kd.ListViewController
   handleChanges: (change) ->
 
     switch change.event
+      when 'node.exec'
+        if ((source = @itemsIndexed[change.data['from']]) && \
+            (target = @itemsIndexed[change.data['to']]))
+
+          source = source.dia._connection
+          target = target.dia._connection
+
+          tid = @scene.addTransfer source, {
+            color: 'red', size: 6, duration: 500, reverse: yes
+          }
+          @scene.once "Transfer-#{tid}-Done", =>
+            @scene.addTransfer target, {
+              color: 'green', size: 6, duration: 500
+            }
+
       when 'node.added'
         @addItem change.kiteInfo
       when 'node.removed'
