@@ -4,7 +4,11 @@
   "description": "@rope/home: rope homepage",
   "license": "MIT",
   "private": true,
-  "keywords": ["rope-home", "kd", "kd.js"],
+  "keywords": [
+    "rope-home",
+    "kd",
+    "kd.js"
+  ],
   "author": "Gokmen Goksel <gokmen@goksel.me>",
   "maintainers": [
     {
@@ -60,7 +64,7 @@
     "express-session": "^1.15.6",
     "hammerjs": "^2.0.8",
     "kd.js": "^1.2.4",
-    "kite.js": "^1.0.9",
+    "kite.js": "^1.0.12",
     "mongoose": "^4.12.2",
     "mongoose-findorcreate": "^2.0.0",
     "morgan": "^1.9.0",
