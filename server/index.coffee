@@ -73,7 +73,6 @@ sessionStore = new MongoDBStore
 sessionStore.on 'error', (error) ->
   console.log 'error on mongo session store', error
 
-
 app.use logger 'dev'
 app.use bodyParser.json()
 app.use bodyParser.urlencoded { extended: no }
@@ -85,6 +84,11 @@ app.use session
   store: sessionStore
   resave: yes
   saveUninitialized: no
+
+# register rope auth for server side authentication
+app.use (req, res, next) ->
+  req.rope_auth = false # TODO Add secret support for ROPE servers ~ GG
+  do next
 
 # register passport.js middlewares to express app.
 app.use(passport.initialize())

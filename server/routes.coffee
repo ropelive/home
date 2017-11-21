@@ -52,6 +52,27 @@ router.get '/tokens', (req, res) ->
     res.status(200).json tokens
 
 # TODO: add tests
+router.get '/token/:value', (req, res) ->
+  unless req.rope_auth
+    return res.status(401).json { error: yes, message: 'Unauthorized' }
+
+  { value } = req.params
+
+  Token.findOne { value }, 'user', (err, token) ->
+    return res.status(500).json err  if err
+
+    unless token
+      return res.status(404).json { error: no, message: 'Not found' }
+
+    User.findOne { _id: token.user }, (err, user) ->
+      return res.status(500).json err  if err
+
+      unless user
+        return res.status(404).json { error: no, message: 'Not found' }
+
+      res.status(200).json user
+
+# TODO: add tests
 # router.post '/tokens', (req, res) ->
 router.post '/tokens', (req, res) ->
   unless req.user
