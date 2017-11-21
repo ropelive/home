@@ -99,7 +99,7 @@ module.exports = class RopeScene extends kd.DiaScene
   iw = 90
   f  = Math.floor
 
-  guessNodePosition: ->
+  guessNodePosition: (nc) ->
 
     [ w, h ] = [ @getWidth(), @getHeight() ]
 
@@ -107,13 +107,13 @@ module.exports = class RopeScene extends kd.DiaScene
     sp = w / 10
     sh = h / 10
     rw = w / sp
-    rt = f @nodeCount / rw
-    ic = f @nodeCount / 2
+    rt = f nc / rw
+    ic = f nc / 2
     zp = w / 2 - iw / 2
 
-    x = if 0 is @nodeCount
+    x = if 0 is nc
       zp
-    else if 0 is @nodeCount % 2
+    else if 0 is nc % 2
       zp + (sp * ic - (ic * rt)) - (zp * rt)
     else
       zp - (sp * ic - (ic * rt)) + (zp * rt)
@@ -129,7 +129,7 @@ module.exports = class RopeScene extends kd.DiaScene
     nodeData = item.getData()
     nodeData._type = getClass nodeData.kiteInfo.environment
 
-    c = @guessNodePosition()
+    c = @guessNodePosition @nodeCount
 
     parent = this
     node = @kiteContainer.addDia (new kd.DiaObject {
@@ -189,8 +189,6 @@ module.exports = class RopeScene extends kd.DiaScene
 
     return  unless node
 
-    @nodeCount--
-
     node.setClass 'animate'
     node.setY -@getHeight()
 
@@ -198,8 +196,9 @@ module.exports = class RopeScene extends kd.DiaScene
 
     kd.utils.defer =>
       @startAutoUpdate 1000
-      kd.utils.wait 1000, ->
+      kd.utils.wait 1000, =>
         node.destroy()
+        @nodeCount--
 
 
   removeAllNodes: ->
@@ -222,7 +221,7 @@ module.exports = class RopeScene extends kd.DiaScene
       dia = @kiteContainer.dias[dia]
 
       @nodeCount++
-      c = @guessNodePosition()
+      c = @guessNodePosition @nodeCount
 
       dia.setX c.x
       dia.setY c.y
