@@ -74,7 +74,7 @@ module.exports = class RopeScene extends kd.DiaScene
 
     return 'firefox'  if /firefox/i.test env
     return 'safari'   if /safari/i.test env
-    return 'chrome'   if /chrome/i.test env
+    return 'chrome'   if /chrom/i.test env
     return 'opera'    if /opera/i.test env
     return 'edge'     if /^edge/i.test env
     return 'js'       if /^node\.js/i.test env
