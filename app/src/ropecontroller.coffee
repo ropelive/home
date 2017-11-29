@@ -84,7 +84,9 @@ module.exports = class RopeController extends kd.ListViewController
           @rope.kite.tell('run', {
             kiteId: data.id
             method, args
-          }).then (reply) =>
+          })
+
+          .then (reply) =>
 
             options.text    = reply
             options.reverse = yes
@@ -102,6 +104,30 @@ module.exports = class RopeController extends kd.ListViewController
               @scene.once "Transfer-#{id}-Done", =>
                 reply = JSON.stringify(reply) if "object" is typeof reply
                 alert("#{reply}")
+
+          .catch (error) =>
+
+            # TODO unify these with then/catch
+
+            options.text    = "#{method} failed"
+            options.color   = 'red'
+            options.reverse = yes
+
+            id = @scene.addTransfer dia._connection, options
+
+            @scene.once "Transfer-#{id}-Done", =>
+
+              options.reverse   = no
+              options.textAlign = 'right'
+
+              id = @scene.addTransfer @connection, options
+
+              return if /^(rope|kite)\./.test method
+
+              @scene.once "Transfer-#{id}-Done", =>
+                error = JSON.stringify(error) if "object" is typeof error
+                alert("#{error}")
+
 
 
     @scene.on 'selected', @bound 'selectItem'
