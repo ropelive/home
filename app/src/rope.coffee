@@ -23,9 +23,7 @@ module.exports = class Rope extends kd.Object
       #   inMemory: true
       iframeHead: ""
       iframeStyle: 'body, html { height: 100%; width: 100%; overflow: auto }'
-      iframeSandbox: [
-        'allow-forms', 'allow-popups', 'allow-scripts' #, 'allow-same-origin'
-      ]
+      iframeSandbox: [ 'allow-scripts' ]
 
     @initializeKite()
 
@@ -208,18 +206,20 @@ module.exports = class Rope extends kd.Object
         })
 
         const rope = {
-          return: (res, error) => {
-            let message = { __op_id, error }
-            if (!error) {
-              message.res = res
-            }
-            __getParent.then(parent => {
-              parent.source.postMessage(message, parent.origin)
+          return: (res) => {
+            __getParent.then(p => {
+              p.source.postMessage({ __op_id, res }, p.origin)
             })
-            return;
           },
           fail: (error) => {
-            rope.return(null, error)
+            __getParent.then(p => {
+              p.source.postMessage({ __op_id, error }, p.origin)
+            })
+          },
+          callback: (error, res) => {
+            __getParent.then(p => {
+              p.source.postMessage({ __op_id, error, res }, p.origin)
+            })
           }
         }
 
