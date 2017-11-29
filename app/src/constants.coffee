@@ -7,6 +7,7 @@ module.exports = ->
     AUTO_CONNECT   : true
     AUTO_RECONNECT : true
 
+    EVAL_TIMEOUT   : 16000
     BROWSERIFY_CDN : 'https://npm.rope.live'
     BABEL_OPTIONS  :
       presets: [

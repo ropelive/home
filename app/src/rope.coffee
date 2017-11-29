@@ -2,7 +2,7 @@ kd = require 'kd.js'
 { Kite } = require 'kite.js'
 
 { ROPE_SERVER, ROPE_DEBUG, NODE_NAME
-  AUTO_CONNECT, AUTO_RECONNECT
+  AUTO_CONNECT, AUTO_RECONNECT, EVAL_TIMEOUT
   BABEL_OPTIONS, BROWSERIFY_CDN } = do require './constants'
 
 uuid = require 'uuid'
@@ -185,6 +185,71 @@ module.exports = class Rope extends kd.Object
         @npmSandbox.iframe.iframe.contentWindow.postMessage {
           args, op_id
         }, '*'
+
+    @handleFunc 'eval', (code, callback) ->
+
+      completed = false
+      __op_id = uuid()
+
+      code = Babel.transform(code, BABEL_OPTIONS).code
+
+      code = """
+        const __op_id = "#{__op_id}"
+        const __origin = "#{location.origin}"
+
+        const __getParent = new Promise(ok => {
+          window.addEventListener('message', event => {
+            if (event.origin != __origin || event.data.__op_id != __op_id) {
+              return
+            } else {
+              ok(event)
+            }
+          }, false)
+        })
+
+        const rope = {
+          return: (res, error) => {
+            let message = { __op_id, error }
+            if (!error) {
+              message.res = res
+            }
+            __getParent.then(parent => {
+              parent.source.postMessage(message, parent.origin)
+            })
+            return;
+          },
+          fail: (error) => {
+            rope.return(null, error)
+          }
+        }
+
+        try {
+          #{code}
+        } catch (err) {
+          let { name, message, column, line } = err
+          rope.fail({ name, message, column, line })
+        }
+
+      """
+
+      window.addEventListener 'message', (event) ->
+        return  if event.origin != "null" or event.data.__op_id != __op_id
+        completed = true
+        callback event.data.error, event.data.res
+        __op_id = uuid() # to prevent multiple calls on same operation id
+
+      bundle = Babel.transform(code, BABEL_OPTIONS)
+
+      @npmSandbox.bundle bundle.code
+      @npmSandbox.once 'bundleEnd', => kd.utils.wait 100, =>
+        @npmSandbox.iframe.iframe.contentWindow.postMessage { __op_id }, '*'
+        kd.utils.wait EVAL_TIMEOUT, ->
+          callback {
+            type: 'Timeout',
+            message: """
+              Operation timed out, did you call rope.return in your code?
+            """
+          } unless completed
 
     return @api
 
