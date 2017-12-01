@@ -262,7 +262,7 @@ module.exports = class Rope extends kd.Object
 
     @api[name] = (args..., cb) =>
 
-      @emit 'method.call', name
+      @emit 'method.call', name  unless name is 'rope.notify'
 
       if typeof cb is 'function'
         args = args.concat (res...) =>
