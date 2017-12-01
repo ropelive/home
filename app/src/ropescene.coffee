@@ -16,8 +16,6 @@ module.exports = class RopeScene extends kd.DiaScene
       prependCanvas   : yes
     }, data
 
-    @nodeCount = 0
-
 
   viewAppended: ->
 
@@ -67,6 +65,7 @@ module.exports = class RopeScene extends kd.DiaScene
       staticJoints : ['top']
     })
 
+    kd.utils.defer @bound 'buildPositionIndex'
     @listenWindowResize()
 
 
@@ -82,9 +81,8 @@ module.exports = class RopeScene extends kd.DiaScene
     return ''
 
 
-  setLRClass: (node, x) ->
+  setLRClass: (node, x, w) ->
 
-    w = @getWidth()
     center = w / 2 - iw / 2
 
     node.unsetClass 'right left'
@@ -99,10 +97,9 @@ module.exports = class RopeScene extends kd.DiaScene
   iw = 90
   f  = Math.floor
 
-  guessNodePosition: (nc) ->
+  guessNodePosition: (index, w, h) ->
 
-    [ w, h ] = [ @getWidth(), @getHeight() ]
-
+    nc = index + 1
     pt = h / 4 # 120
     sp = w / 10
     sh = h / 10
@@ -111,25 +108,22 @@ module.exports = class RopeScene extends kd.DiaScene
     ic = f nc / 2
     zp = w / 2 - iw / 2
 
-    x = if 0 is nc
-      zp
-    else if 0 is nc % 2
+    x = if 0 is nc % 2
       zp + (sp * ic - (ic * rt)) - (zp * rt)
     else
       zp - (sp * ic - (ic * rt)) + (zp * rt)
 
     y = pt + sh * rt
 
-    return { x, y }
+    return { x, y, index }
 
 
   addNode: (item, current = no) ->
 
-    @nodeCount++
     nodeData = item.getData()
     nodeData._type = getClass nodeData.kiteInfo.environment
 
-    c = @guessNodePosition @nodeCount
+    c = @getFirstAvailablePosition()
 
     parent = this
     node = @kiteContainer.addDia (new kd.DiaObject {
@@ -143,13 +137,15 @@ module.exports = class RopeScene extends kd.DiaScene
         parent.emit 'selected', item
     }, nodeData), { x: c.x, y: @getHeight() + 100 }
 
+    node._index = c.index
+
     node.mouseOver = ->
       item.setClass 'hover'
 
     node.mouseLeave = ->
       item.unsetClass 'hover'
 
-    @setLRClass node, c.x
+    @setLRClass node, c.x, @getWidth()
 
     node.on 'DragStarted', =>
       @startAutoUpdate()
@@ -193,12 +189,11 @@ module.exports = class RopeScene extends kd.DiaScene
     node.setY -@getHeight()
 
     @deleteConnection node._connection
+    @releasePositionForNode node._index
 
     kd.utils.defer =>
       @startAutoUpdate 1000
-      kd.utils.wait 1000, =>
-        node.destroy()
-        @nodeCount--
+      kd.utils.wait 1000, node.bound 'destroy'
 
 
   removeAllNodes: ->
@@ -206,9 +201,33 @@ module.exports = class RopeScene extends kd.DiaScene
     @removeNode node  for _, node of @kiteContainer.dias
 
 
+  releasePositionForNode: (index) ->
+
+    @positions[index][0] = false
+
+
+  lockPositionForNode: (index) ->
+
+    @positions[index][0] = true
+    return @positions[index][1]
+
+
+  getFirstAvailablePosition: ->
+
+    for pos, i in @positions when pos[0] is false
+      return @lockPositionForNode i
+
+
+  buildPositionIndex: ->
+
+    [ w, h ] = [ @getWidth(), @getHeight() ]
+    @positions = [0..200].map (i) =>
+      pos = @guessNodePosition i, w, h
+      [ inUse = false, pos ]
+
+
   resetNodes: (animate = yes) ->
 
-    @nodeCount = 0
     @startAutoUpdate 400
 
     @kiteContainer.setX 0
@@ -216,17 +235,21 @@ module.exports = class RopeScene extends kd.DiaScene
 
     @kiteContainer.setClass 'onreset'  if animate
 
-    Object.keys(@kiteContainer.dias).forEach (dia) =>
+    @buildPositionIndex()
+    w = @getWidth()
+
+    Object.keys(@kiteContainer.dias).forEach (dia, index) =>
 
       dia = @kiteContainer.dias[dia]
 
-      @nodeCount++
-      c = @guessNodePosition @nodeCount
+      c = @lockPositionForNode index
 
       dia.setX c.x
       dia.setY c.y
 
-      @setLRClass dia, c.x
+      dia._index = c.index
+
+      @setLRClass dia, c.x, w
 
     return  unless animate
 
