@@ -2,6 +2,9 @@ version: '2'
 services:
   base:
     build: .
+    environment:
+      - ROPE_SERVER=$ROPE_SERVER
+      - BROWSERIFY_CDN=$BROWSERIFY_CDN
     image: ropelive/home
 
   server:

@@ -5,6 +5,7 @@ uglify          = require 'gulp-uglify'
 streamify       = require 'gulp-streamify'
 CSSmin          = require 'gulp-minify-css'
 
+envify          = require 'envify'
 rimraf          = require 'rimraf'
 source          = require 'vinyl-source-stream'
 nodemon         = require 'nodemon'
@@ -34,7 +35,7 @@ getBrowserifiedBundler = ->
     fullPaths    : {}
     entries      : [ paths.scripts.source ]
     extensions   : [ '.coffee' ]
-    transform    : [ 'coffeeify' ]
+    transform    : [ 'coffeeify', 'envify' ]
     debug        : !production
 
 
